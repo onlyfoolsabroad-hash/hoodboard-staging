@@ -115,8 +115,10 @@ h1.lit .w>i{transform:none}
 .sub{margin-top:clamp(9px,1.3vh,16px);font-size:clamp(13px,1.15vw,17px);line-height:1.45;color:#9EA1A8;
   max-width:32rem;opacity:0}
 
-.under{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,clamp(300px,31vw,505px));
-  gap:clamp(22px,3vw,52px);align-items:start}
+/* The preview is bound by height as well as width. A wide but short window (a laptop with a browser open, which
+   is most of them) made the right column taller than the row and pushed the whole block into the header. */
+.under{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,clamp(320px,min(37vw,58vh),620px));
+  gap:clamp(20px,2.6vw,46px);align-items:start}
 .claim{font-family:var(--display);font-weight:400;font-size:clamp(19px,2.05vw,34px);line-height:1.06;
   letter-spacing:-.025em;opacity:0}
 @media (max-width:1024px){.under{grid-template-columns:1fr}.right{display:none}}
@@ -197,8 +199,9 @@ a:focus-visible{outline:2px solid var(--acid);outline-offset:3px}
   font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#4E5157;font-weight:700;opacity:0}
 @media (max-width:640px){.foot span:last-child{display:none}}
 
-/* Height is the scarce axis here. The readout goes before the preview does, and the prose before either. */
-@media (max-height:800px){ .tele{display:none} }
+/* Height is the scarce axis here. The readout goes before the preview does, and the prose before either.
+   940px, not 800: between those two the panel and the preview together still did not fit. */
+@media (max-height:940px){ .tele{display:none} }
 @media (max-height:720px){
   .sub{display:none}
   .lr .bar{height:7px}
