@@ -72,8 +72,7 @@ a:focus-visible,button:focus-visible{outline:2px solid var(--acid);outline-offse
   background:linear-gradient(180deg,rgba(8,9,11,.86) 0%,rgba(8,9,11,.42) 30%,rgba(8,9,11,.20) 55%,rgba(8,9,11,.95) 100%),
              radial-gradient(90% 70% at 18% 52%,rgba(8,9,11,.88) 0%,rgba(8,9,11,.30) 46%,rgba(8,9,11,0) 74%)}
 .hero .shell{position:relative;z-index:2}
-.hero h1 .ln{display:block;overflow:hidden}
-.hero h1 .ln i{display:block;font-style:normal;transform:translateY(104%)}
+
 .hero .lede{margin-top:clamp(22px,2.6vw,30px);opacity:0}
 .hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:clamp(28px,3.4vw,38px);opacity:0}
 .hero .kicker{opacity:0}
@@ -177,6 +176,99 @@ footer{border-top:1px solid var(--edge-soft);padding-top:clamp(40px,5vw,60px);ov
 .rv.in{opacity:1;transform:none;transition:opacity var(--slow) var(--ease-out),transform 800ms var(--ease-out)}
 .rv.d1.in{transition-delay:90ms}.rv.d2.in{transition-delay:180ms}.rv.d3.in{transition-delay:270ms}
 
+
+/* ─── LOADER ──────────────────────────────────────────────────────────────
+   Real progress, not a timed fake: the bar tracks images and fonts actually
+   resolving. It exits as bands shearing away, which is the machine opening
+   rather than a page fading in. */
+#load{position:fixed;inset:0;z-index:100;background:var(--void);display:grid;place-items:center;
+  overflow:hidden}
+#load .bands{position:absolute;inset:0;display:flex;flex-direction:column}
+#load .bands i{flex:1;background:var(--void);transform-origin:top;
+  border-bottom:1px solid rgba(238,235,227,.04)}
+#load .core{position:relative;z-index:2;width:min(560px,84vw);text-align:left}
+#load img{width:min(300px,58vw);display:block;margin-bottom:34px}
+#load .bar{height:3px;background:#15181D;overflow:hidden;position:relative}
+#load .bar i{position:absolute;inset:0 100% 0 0;background:var(--acid);display:block}
+#load .row{display:flex;justify-content:space-between;align-items:baseline;margin-top:14px;
+  font-weight:700;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--faint)}
+#load .row b{color:var(--acid);font-variant-numeric:tabular-nums}
+html.loaded #load{pointer-events:none}
+
+/* ─── GRAIN + SCANLINE — physical imperfection is what separates a rendered
+   page from a generated one. Cheap, static, always on. ──────────────────── */
+.grain{position:fixed;inset:-120%;z-index:90;pointer-events:none;opacity:.42;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.86' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grainShift 620ms steps(1) infinite}
+@keyframes grainShift{
+  0%{transform:translate(0,0)}20%{transform:translate(-3%,2%)}40%{transform:translate(2%,-3%)}
+  60%{transform:translate(-2%,-2%)}80%{transform:translate(3%,1%)}100%{transform:translate(0,0)}}
+.scan{position:fixed;inset:0;z-index:89;pointer-events:none;opacity:.16;
+  background:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.5) 2px 3px)}
+
+/* ─── KINETIC TYPE — words ride up out of a mask, each on its own delay,
+   with a slight shear so the line arrives rather than fades. ────────────── */
+.w{display:inline-block;overflow:hidden;vertical-align:bottom;padding-right:.14em;margin-right:-.14em}
+.w>i{display:inline-block;font-style:normal;transform:translateY(110%) skewY(5deg);
+  transition:transform 900ms var(--ease-out)}
+.in .w>i,.hero .lit .w>i{transform:none}
+
+/* ─── GLITCH — two offset copies clipped to moving slices. Runs on a timer,
+   never on a loop, so it reads as interference and not decoration. ─────── */
+.gl{position:relative;display:inline-block}
+.gl::before,.gl::after{content:attr(data-t);position:absolute;left:0;top:0;width:100%;
+  pointer-events:none;opacity:0;clip-path:inset(100% 0 0 0)}
+.gl::before{color:#00E5FF;transform:translateX(-2px)}
+.gl::after{color:var(--neg);transform:translateX(2px)}
+.gl.fire::before{animation:gA 420ms steps(2) 1}
+.gl.fire::after{animation:gB 420ms steps(2) 1}
+@keyframes gA{0%{opacity:.9;clip-path:inset(12% 0 62% 0)}25%{clip-path:inset(48% 0 30% 0)}
+  50%{clip-path:inset(72% 0 8% 0)}75%{clip-path:inset(26% 0 54% 0)}100%{opacity:0;clip-path:inset(100% 0 0 0)}}
+@keyframes gB{0%{opacity:.9;clip-path:inset(64% 0 14% 0)}25%{clip-path:inset(18% 0 60% 0)}
+  50%{clip-path:inset(38% 0 42% 0)}75%{clip-path:inset(80% 0 4% 0)}100%{opacity:0;clip-path:inset(100% 0 0 0)}}
+
+/* ─── TICKER — a chain that never stops moving. ─────────────────────────── */
+.tick{position:relative;overflow:hidden;border-block:1px solid var(--edge);background:#0A0C0F;
+  padding:16px 0}
+.tick .track{display:flex;width:max-content;animation:tickRun 34s linear infinite}
+.tick span{display:inline-flex;align-items:center;gap:26px;padding-right:26px;white-space:nowrap;
+  font-family:var(--display);font-size:clamp(15px,1.7vw,22px);letter-spacing:-.01em;color:#3D424A}
+.tick span em{font-style:normal;color:var(--acid)}
+.tick b{color:var(--acid);font-weight:400}
+@keyframes tickRun{to{transform:translateX(-50%)}}
+.tick::before,.tick::after{content:'';position:absolute;top:0;bottom:0;width:14%;z-index:2;pointer-events:none}
+.tick::before{left:0;background:linear-gradient(90deg,#0A0C0F,transparent)}
+.tick::after{right:0;background:linear-gradient(270deg,#0A0C0F,transparent)}
+
+/* ─── MASKED ART — images are unveiled by a moving edge, not faded. ─────── */
+.art img{clip-path:inset(0 0 100% 0);transition:clip-path 1100ms var(--ease-out)}
+.in .art img,.art.in img{clip-path:inset(0 0 0 0)}
+.art .edge{position:absolute;left:0;right:0;height:2px;background:var(--acid);top:0;
+  transform:scaleX(0);transform-origin:left;transition:transform 900ms var(--ease-out),top 1100ms var(--ease-out)}
+.in .art .edge,.art.in .edge{transform:scaleX(1);top:100%}
+
+/* ─── SURFACES as an editorial list, not a card grid ────────────────────── */
+.surf{margin-top:clamp(28px,3.6vw,42px);border-top:1px solid var(--edge)}
+.sf{display:grid;grid-template-columns:auto 1fr;gap:clamp(16px,2.4vw,30px);align-items:baseline;
+  padding:clamp(15px,1.9vw,20px) 0;border-bottom:1px solid var(--edge);
+  transition:background var(--base) ease,padding-left var(--base) var(--ease-soft)}
+.sf:hover{background:rgba(191,242,2,.04);padding-left:10px}
+.sf b{font-family:var(--display);font-weight:400;font-size:clamp(16px,1.8vw,22px);color:var(--bone);
+  letter-spacing:-.01em;min-width:5.5em}
+.sf p{margin:0;font-size:15px;line-height:1.45;color:var(--faint)}
+
+/* ─── MAGNETIC BUTTON ───────────────────────────────────────────────────── */
+.pill{will-change:transform}
+.pill .lbl{display:inline-block}
+
+@media (prefers-reduced-motion:reduce){
+  .grain,.scan{display:none}
+  .tick .track{animation:none}
+  .w>i{transform:none}
+  .art img{clip-path:none}
+  #load{display:none}
+}
+
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .rv{opacity:1;transform:none}.float{animation:none}.cue span{animation:none}.pill{transition:none}
@@ -185,10 +277,21 @@ footer{border-top:1px solid var(--edge-soft);padding-top:clamp(40px,5vw,60px);ov
 </head>
 <body>
 
+<div id="load">
+  <div class="bands" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="core">
+    <img src="cs/logo.png" alt="HOOD BOARD">
+    <div class="bar"><i id="loadBar"></i></div>
+    <div class="row"><span id="loadMsg">Reading chain 4663</span><b id="loadPct">0%</b></div>
+  </div>
+</div>
+<div class="grain" aria-hidden="true"></div>
+<div class="scan" aria-hidden="true"></div>
+
 <header class="hdr" id="hdr">
   <div class="shell">
     <img src="cs/logo.png" alt="HOOD BOARD">
-    <a class="pill" id="cta-hdr" href="#join">Join the waitlist</a>
+    <a class="pill" id="cta-hdr" href="#join"><span class="lbl">Join the waitlist</span></a>
   </div>
 </header>
 
@@ -197,27 +300,39 @@ footer{border-top:1px solid var(--edge-soft);padding-top:clamp(40px,5vw,60px);ov
   <div class="veil" aria-hidden="true"></div>
   <div class="shell">
     <span class="kicker">Robinhood Chain · 4663 · Coming soon</span>
-    <h1>
-      <span class="ln"><i>Thousands</i></span>
-      <span class="ln"><i>launch.</i></span>
-      <span class="ln"><i class="acid">Few make</i></span>
-      <span class="ln"><i class="acid">the Board.</i></span>
+    <h1 id="heroH1">
+      <span class="w"><i>Thousands</i></span> <span class="w"><i>launch.</i></span><br>
+      <span class="w"><i class="acid gl" data-t="Few">Few</i></span>
+      <span class="w"><i class="acid gl" data-t="make">make</i></span><br>
+      <span class="w"><i class="acid gl" data-t="the">the</i></span>
+      <span class="w"><i class="acid gl" data-t="Board.">Board.</i></span>
     </h1>
     <p class="lede">A breakout board for Robinhood Chain memecoins. It tracks which coins actually break
       through — and shows you the evidence for every call.</p>
     <div class="cta">
-      <a class="pill" id="cta-hero" href="#join">Join the waitlist</a>
+      <a class="pill" id="cta-hero" href="#join"><span class="lbl">Join the waitlist</span></a>
       <a class="pill ghost" href="#board">See what's coming</a>
     </div>
   </div>
   <div class="cue" aria-hidden="true">Scroll<span></span></div>
 </section>
 
+<div class="tick" aria-hidden="true">
+  <div class="track">
+    <span>THOUSANDS LAUNCH <b>·</b> <em>FEW MAKE THE BOARD</em> <b>·</b> SIX HOURS ABOVE THE LINE <b>·</b>
+      CHAIN 4663 <b>·</b> <em>TOUCHED IS NOT HELD</em> <b>·</b> EVERY CALL OPENS <b>·</b>
+      REWIND THE DAY <b>·</b> <em>MOST NEVER MAKE IT</em> <b>·</b></span>
+    <span>THOUSANDS LAUNCH <b>·</b> <em>FEW MAKE THE BOARD</em> <b>·</b> SIX HOURS ABOVE THE LINE <b>·</b>
+      CHAIN 4663 <b>·</b> <em>TOUCHED IS NOT HELD</em> <b>·</b> EVERY CALL OPENS <b>·</b>
+      REWIND THE DAY <b>·</b> <em>MOST NEVER MAKE IT</em> <b>·</b></span>
+  </div>
+</div>
+
 <section class="blk" id="board">
   <div class="shell split">
     <div>
       <span class="kicker rv">01 — The Board</span>
-      <h2 class="rv d1">Almost none<br>make it.</h2>
+      <h2 class="rv d1"><span class="w"><i>Almost</i></span> <span class="w"><i>none</i></span><br><span class="w"><i>make</i></span> <span class="w"><i>it.</i></span></h2>
       <p class="copy rv d2" style="margin-top:clamp(20px,2.4vw,28px)">Thousands of coins launch here. A
         handful hold their ground long enough to matter. The Board is the short list — and everything
         below it stays visible, with the reason it didn't qualify.</p>
@@ -228,7 +343,7 @@ footer{border-top:1px solid var(--edge-soft);padding-top:clamp(40px,5vw,60px);ov
     </div>
     <div class="art rv d2">
       <img src="cs/rack.jpg" alt="Six machined modules in a rail; one lit and selected" loading="lazy">
-      <div class="glowfloor"></div>
+      <div class="edge"></div><div class="glowfloor"></div>
     </div>
   </div>
 </section>
@@ -237,11 +352,11 @@ footer{border-top:1px solid var(--edge-soft);padding-top:clamp(40px,5vw,60px);ov
   <div class="shell split flip">
     <div class="art rv d1">
       <img src="cs/caliper.jpg" alt="A precision caliper measuring a machined module" loading="lazy">
-      <div class="glowfloor"></div>
+      <div class="edge"></div><div class="glowfloor"></div>
     </div>
     <div>
       <span class="kicker rv">02 — The rule</span>
-      <h2 class="rv d1">Six hours<br>above the line.</h2>
+      <h2 class="rv d1"><span class="w"><i>Six</i></span> <span class="w"><i>hours</i></span><br><span class="w"><i>above</i></span> <span class="w"><i>the</i></span> <span class="w"><i>line.</i></span></h2>
       <p class="copy rv d2" style="margin-top:clamp(20px,2.4vw,28px)">Touching a number is not making the
         Board. A coin joins a tier only when it stays above that tier's line — continuously, on its
         canonical market. Fall back and it drops immediately.</p>
@@ -263,7 +378,7 @@ footer{border-top:1px solid var(--edge-soft);padding-top:clamp(40px,5vw,60px);ov
   <div class="shell split">
     <div>
       <span class="kicker rv">03 — The tiers</span>
-      <h2 class="rv d1">Four rails.<br>One lit.</h2>
+      <h2 class="rv d1"><span class="w"><i>Four</i></span> <span class="w"><i>rails.</i></span><br><span class="w"><i>One</i></span> <span class="w"><i>lit.</i></span></h2>
       <p class="copy rv d2" style="margin-top:clamp(20px,2.4vw,28px)">Each tier is a line a coin has to
         hold. Move up and the module climbs; lose the line and it comes straight back down.</p>
       <div class="rungs rv d3">
@@ -283,17 +398,17 @@ footer{border-top:1px solid var(--edge-soft);padding-top:clamp(40px,5vw,60px);ov
   <div class="shell split flip">
     <div class="art rv d1">
       <img class="float" src="cs/module.jpg" alt="A machined module clamped into a lit rail" loading="lazy">
-      <div class="glowfloor"></div>
+      <div class="edge"></div><div class="glowfloor"></div>
     </div>
     <div>
       <span class="kicker rv">04 — Inspect</span>
-      <h2 class="rv d1">Every call<br>opens.</h2>
+      <h2 class="rv d1"><span class="w"><i>Every</i></span> <span class="w"><i>call</i></span><br><span class="w"><i>opens.</i></span></h2>
       <p class="copy rv d2" style="margin-top:clamp(20px,2.4vw,28px)">Click any coin and it extracts from
         the rail, carrying the evidence the Board used to place it — including which market it trusted,
         and why.</p>
       <div class="surf rv d3">
         <div class="sf"><b>Market</b><p>Value series, usable depth, buys and sells.</p></div>
-        <div class="sf"><b>Chain</b><p>Contract, pool, age, and the canonical-market decision in full.</p></div>
+        <div class="sf"><b>Chain</b><p>Contract, pool, age, and the canonical-market decision, in full.</p></div>
         <div class="sf"><b>Social</b><p>The description and links the contract itself carries.</p></div>
         <div class="sf"><b>Web</b><p>A screenshot of the project's site, taken by us.</p></div>
       </div>
@@ -305,14 +420,14 @@ footer{border-top:1px solid var(--edge-soft);padding-top:clamp(40px,5vw,60px);ov
   <div class="shell">
     <div style="max-width:38rem">
       <span class="kicker rv">05 — Replay</span>
-      <h2 class="rv d1">Rewind the day.</h2>
+      <h2 class="rv d1"><span class="w"><i>Rewind</i></span> <span class="w"><i>the</i></span> <span class="w"><i>day.</i></span></h2>
       <p class="copy rv d2" style="margin-top:clamp(20px,2.4vw,28px)">The Board is a state, so it can be
         rebuilt at any minute of the last 24 hours. Scrub back and watch coins climb, qualify, make a
         tier — and come off it.</p>
     </div>
     <div class="art rv d3" style="margin-top:clamp(34px,4.6vw,58px)">
       <img src="cs/replay.jpg" alt="One module repeated along a rail as a motion trail" loading="lazy">
-      <div class="glowfloor"></div>
+      <div class="edge"></div><div class="glowfloor"></div>
     </div>
   </div>
 </section>
@@ -321,7 +436,7 @@ footer{border-top:1px solid var(--edge-soft);padding-top:clamp(40px,5vw,60px);ov
   <div class="shell split">
     <div>
       <span class="kicker rv">06 — What it won't do</span>
-      <h2 class="rv d1">The refusals<br>are the product.</h2>
+      <h2 class="rv d1"><span class="w"><i>The</i></span> <span class="w"><i>refusals</i></span><br><span class="w"><i>are</i></span> <span class="w"><i>the</i></span> <span class="w"><i>product.</i></span></h2>
       <p class="copy rv d2" style="margin-top:clamp(20px,2.4vw,28px)">Most of the work went into what the
         Board declines to say. A tool that fills its gaps with plausible guesses is worse than useless in
         a market like this one.</p>
@@ -338,7 +453,7 @@ footer{border-top:1px solid var(--edge-soft);padding-top:clamp(40px,5vw,60px);ov
     </div>
     <div class="art rv d2">
       <img src="cs/vault.jpg" alt="A heavy machined door, ajar, with light at the seam" loading="lazy">
-      <div class="glowfloor"></div>
+      <div class="edge"></div><div class="glowfloor"></div>
     </div>
   </div>
 </section>
@@ -346,7 +461,7 @@ footer{border-top:1px solid var(--edge-soft);padding-top:clamp(40px,5vw,60px);ov
 <section class="blk">
   <div class="shell" style="max-width:960px">
     <span class="kicker rv">07 — Questions</span>
-    <h2 class="rv d1">Before you ask.</h2>
+    <h2 class="rv d1"><span class="w"><i>Before</i></span> <span class="w"><i>you</i></span> <span class="w"><i>ask.</i></span></h2>
     <div class="faq rv d2" id="faq">
       <div class="qa" data-open="true">
         <button type="button">What is HOOD BOARD?<span class="pm">+</span></button>
@@ -392,15 +507,13 @@ footer{border-top:1px solid var(--edge-soft);padding-top:clamp(40px,5vw,60px);ov
   <div class="arc c" aria-hidden="true"></div>
   <div class="bloom" aria-hidden="true"></div>
   <div class="shell inner">
-    <h2 class="rv">Track. Inspect.<br><span class="acid">Replay.</span></h2>
+    <h2 class="rv"><span class="w"><i>Track.</i></span> <span class="w"><i>Inspect.</i></span><br><span class="w"><i class="acid gl" data-t="Replay.">Replay.</i></span></h2>
     <p class="lede rv d1">Join the waiting list and you'll know the moment the Board opens.</p>
     <div class="cta rv d2">
       <a class="pill" id="cta-close" href="#">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.9 4.3 18.6 20c-.2 1.1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.1 13.1l-4.8-1.5c-1-.3-1-1 .2-1.5l18.8-7.3c.9-.3 1.6.2 1.6 1.5Z"/></svg>
-        Join the Telegram</a>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.9 4.3 18.6 20c-.2 1.1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.1 13.1l-4.8-1.5c-1-.3-1-1 .2-1.5l18.8-7.3c.9-.3 1.6.2 1.6 1.5Z"/></svg><span class="lbl">Join the Telegram</span></a>
       <a class="pill ghost" id="cta-x" href="#">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.2 2.2h3.3l-7.2 8.3 8.5 11.3h-6.6l-5.2-6.8-6 6.8H1.7l7.7-8.8L1.2 2.2h6.8l4.7 6.2 5.5-6.2Zm-1.2 17.7h1.8L7.1 4H5.2l11.8 15.9Z"/></svg>
-        Follow on X</a>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.2 2.2h3.3l-7.2 8.3 8.5 11.3h-6.6l-5.2-6.8-6 6.8H1.7l7.7-8.8L1.2 2.2h6.8l4.7 6.2 5.5-6.2Zm-1.2 17.7h1.8L7.1 4H5.2l11.8 15.9Z"/></svg><span class="lbl">Follow on X</span></a>
     </div>
   </div>
 </section>
@@ -417,6 +530,7 @@ footer{border-top:1px solid var(--edge-soft);padding-top:clamp(40px,5vw,60px);ov
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <script>
 /* ── the only thing to edit ─────────────────────────────────────────────── */
 const LINKS = { telegram: 'https://t.me/hoodboardfun', x: 'https://x.com/hoodboardfun' }
@@ -432,12 +546,57 @@ for (const [id, url] of [['cta-hdr', LINKS.telegram], ['cta-hero', LINKS.telegra
 
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
 
+/* Words ride up on their own delay, so a line arrives as a phrase rather than as one block. */
+document.querySelectorAll('.w > i').forEach((el, i, all) => {
+  const h = el.closest('h1, h2')
+  const sibs = h ? [...h.querySelectorAll('.w > i')] : all
+  el.style.transitionDelay = (sibs.indexOf(el) * 70) + 'ms'
+})
+
+/* ── SCRAMBLE — a label that decodes reads as a machine resolving. Latin only,
+      fixed length, so nothing reflows while it runs. ────────────────────────── */
+const GLYPH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/\\#$%&*<>+='
+function scramble(el, dur = 760) {
+  const final = el.dataset.final || (el.dataset.final = el.textContent)
+  if (reduced) { el.textContent = final; return }
+  const t0 = performance.now()
+  const tick = (now) => {
+    const p = Math.min(1, (now - t0) / dur)
+    const keep = Math.floor(final.length * p)
+    let out = final.slice(0, keep)
+    for (let i = keep; i < final.length; i++)
+      out += final[i] === ' ' ? ' ' : GLYPH[(Math.random() * GLYPH.length) | 0]
+    el.textContent = out
+    if (p < 1) requestAnimationFrame(tick); else el.textContent = final
+  }
+  requestAnimationFrame(tick)
+}
+
+/* ── GLITCH — fired on a schedule with long gaps, never looped, so it reads as
+      interference rather than as decoration. ───────────────────────────────── */
+function fireGlitch(el) {
+  if (reduced || !el) return
+  el.classList.remove('fire'); void el.offsetWidth; el.classList.add('fire')
+}
+function scheduleGlitch(els) {
+  if (reduced || !els.length) return
+  const run = () => {
+    fireGlitch(els[(Math.random() * els.length) | 0])
+    setTimeout(run, 2600 + Math.random() * 5200)
+  }
+  setTimeout(run, 3200)
+}
+
 /* ── reveal, once per element ───────────────────────────────────────────── */
 const io = new IntersectionObserver((es) => es.forEach((e) => {
   if (!e.isIntersecting) return
   e.target.classList.add('in'); io.unobserve(e.target)
+  const k = e.target.matches('.kicker') ? e.target : e.target.querySelector('.kicker')
+  if (k) scramble(k)
+  e.target.querySelectorAll('.gl').forEach((g) => setTimeout(() => fireGlitch(g), 520))
 }), { threshold: .25, rootMargin: '0px 0px -6% 0px' })
 document.querySelectorAll('.rv').forEach((el) => io.observe(el))
+document.querySelectorAll('.art').forEach((el) => io.observe(el))
 
 /* ── counters ───────────────────────────────────────────────────────────── */
 const countIO = new IntersectionObserver((es) => es.forEach((e) => {
@@ -487,6 +646,40 @@ document.querySelectorAll('#faq .qa button').forEach((b) => b.addEventListener('
 
 const hdr = document.getElementById('hdr')
 addEventListener('scroll', () => hdr.classList.toggle('stuck', scrollY > 40), { passive: true })
+
+/* ── MAGNETIC — the control leans toward the cursor and the label leans further,
+      which is the difference between a button and a thing that is alive. ───── */
+if (!reduced && matchMedia('(hover:hover)').matches) {
+  document.querySelectorAll('.pill:not(.soon)').forEach((el) => {
+    const lbl = el.querySelector('.lbl')
+    el.addEventListener('pointermove', (e) => {
+      const r = el.getBoundingClientRect()
+      const x = (e.clientX - r.left - r.width / 2) / r.width
+      const y = (e.clientY - r.top - r.height / 2) / r.height
+      el.style.transform = `translate(${x * 14}px, ${y * 8}px)`
+      if (lbl) lbl.style.transform = `translate(${x * 7}px, ${y * 4}px)`
+    })
+    el.addEventListener('pointerleave', () => {
+      el.style.transform = ''; if (lbl) lbl.style.transform = ''
+    })
+  })
+}
+
+/* ── PARALLAX — the objects drift against the type as the page moves, which is
+      what stops a long scroll feeling like a slide deck. ───────────────────── */
+if (!reduced && window.ScrollTrigger) {
+  gsap.registerPlugin(ScrollTrigger)
+  document.querySelectorAll('.art img').forEach((img, i) => {
+    gsap.fromTo(img, { yPercent: i % 2 ? 7 : -7 }, {
+      yPercent: i % 2 ? -7 : 7, ease: 'none',
+      scrollTrigger: { trigger: img.closest('.art'), start: 'top bottom', end: 'bottom top', scrub: .6 },
+    })
+  })
+  gsap.utils.toArray('.blk .kicker').forEach((k) => {
+    gsap.fromTo(k, { xPercent: -4 }, { xPercent: 4, ease: 'none',
+      scrollTrigger: { trigger: k, start: 'top bottom', end: 'bottom top', scrub: 1 } })
+  })
+}
 
 /* ─────────────────────────────────────────────────────────────────────────
    HERO SCENE — a corridor of rails receding into haze, procedural so it costs a
@@ -613,22 +806,89 @@ function frame() {
 }
 frame()
 
+/* ─────────────────────────────────────────────────────────────────────────
+   LOAD, THEN OPEN. The bar tracks images and fonts actually resolving rather
+   than a timer, with a floor so a fast connection still gets a beat instead of
+   a flash. It exits as horizontal bands shearing away from the top — the
+   machine opening — and only then does the hero play.
+   ───────────────────────────────────────────────────────────────────────── */
 const strips = bays.flatMap((g) => g.userData.strips)
-if (reduced) {
-  gsap.set(['.hero .kicker', '.hero .lede', '.hero .cta', '.cue'], { opacity: 1 })
-  gsap.set('.hero h1 .ln i', { y: 0 })
-} else {
-  const base = strips.map((s) => (s.material.transparent ? s.material.opacity : 1))
-  strips.forEach((s) => { s.material.transparent = true; s.material.opacity = 0 })
-  gsap.set(canvas, { opacity: 0 })
+const stripBase = strips.map((s) => (s.material.transparent ? s.material.opacity : 1))
+// Not zero: the machine idles dim behind the loader, so the bands lift onto something alive and the intro is a
+// surge rather than a fade up from black.
+if (!reduced) strips.forEach((s) => { s.material.transparent = true; s.material.opacity = .10 })
+const heroH1 = document.getElementById('heroH1')
+const loadEl = document.getElementById('load')
+const barEl = document.getElementById('loadBar')
+const pctEl = document.getElementById('loadPct')
+const msgEl = document.getElementById('loadMsg')
+const STAGES = ['Reading chain 4663', 'Scanning liquidity pools', 'Resolving canonical markets',
+                'Measuring time above the line', 'Opening the Board']
+
+function playHero() {
+  document.documentElement.classList.add('loaded')
+  if (reduced) {
+    gsap.set(['.hero .kicker', '.hero .lede', '.hero .cta', '.cue'], { opacity: 1 })
+    heroH1.classList.add('lit')
+    return
+  }
+  const k = document.querySelector('.hero .kicker')
+  // The canvas has been rendering behind the loader all along, so the bands lift on a dark corridor that is
+  // already there — then the light runs down it. Fading the canvas up from zero left a black hole instead.
   gsap.timeline({ defaults: { ease: 'power3.out' } })
-    .to(canvas, { opacity: 1, duration: 1.1, ease: 'none' })
-    .to(strips.map((s) => s.material), { opacity: (i) => base[i], duration: .5, stagger: { each: .012 } }, .15)
-    .to('.hero .kicker', { opacity: 1, duration: .6 }, .5)
-    .to('.hero h1 .ln i', { y: 0, duration: 1, stagger: .075, ease: 'power4.out' }, .55)
-    .to('.hero .lede', { opacity: 1, duration: .8 }, 1.05)
-    .to('.hero .cta', { opacity: 1, duration: .8 }, 1.2)
-    .to('.cue', { opacity: 1, duration: .8 }, 1.6)
+    .to(strips.map((s) => s.material), { opacity: (i) => stripBase[i], duration: .55, stagger: { each: .014 } }, .02)
+    .add(() => { k.style.opacity = 1; scramble(k, 900) }, .35)
+    .add(() => heroH1.classList.add('lit'), .5)
+    .to('.hero .lede', { opacity: 1, duration: .9 }, 1.15)
+    .to('.hero .cta', { opacity: 1, duration: .9 }, 1.3)
+    .to('.cue', { opacity: 1, duration: .9 }, 1.7)
+    .add(() => scheduleGlitch([...document.querySelectorAll('.gl')]), 2.2)
+}
+
+if (reduced) {
+  loadEl.remove(); playHero()
+} else {
+  // Lazy images below the fold never load until they are scrolled to, so counting them means the bar can
+  // never reach the end. Only what the first screen actually needs is a real milestone.
+  const imgs = [...document.images].filter((i) => i.loading !== 'lazy' && !i.complete)
+  const total = imgs.length + 1                       // + the font set
+  let done = 0, shown = 0
+  const bump = () => { done++ }
+  imgs.forEach((i) => i.addEventListener('load', bump, { once: true }) ||
+                      i.addEventListener('error', bump, { once: true }))
+  document.fonts.ready.then(bump)
+
+  const t0 = performance.now(), FLOOR = 1700, CEIL = 4600
+  const step = (now) => {
+    const real = done / total
+    const floorP = Math.min(1, (now - t0) / FLOOR)     // never finishes before the floor
+    const target = Math.min(real, floorP)
+    shown += (target - shown) * .12
+    const pct = Math.round(Math.min(1, shown) * 100)
+    barEl.style.inset = `0 ${100 - pct}% 0 0`
+    pctEl.textContent = pct + '%'
+    const stage = Math.min(STAGES.length - 1, Math.floor(pct / 100 * STAGES.length))
+    if (msgEl.dataset.stage !== String(stage)) {
+      msgEl.dataset.stage = String(stage); msgEl.textContent = STAGES[stage]
+      msgEl.dataset.final = STAGES[stage]; scramble(msgEl, 420)
+    }
+    const timedOut = now - t0 > CEIL
+    if (pct < 99 && !timedOut) return requestAnimationFrame(step)
+    barEl.style.inset = '0 0 0 0'; pctEl.textContent = '100%'
+    open_()
+  }
+  requestAnimationFrame(step)
+
+  let opened = false
+  function open_() {
+    if (opened) return
+    opened = true
+    gsap.timeline({ onComplete: () => loadEl.remove() })
+      .to('#load .core', { opacity: 0, y: -16, duration: .38, ease: 'power2.in' })
+      .to('#load .bands i', { scaleY: 0, duration: .72, ease: 'power4.inOut',
+        stagger: { each: .055, from: 'start' } }, .22)
+      .add(playHero, .34)
+  }
 }
 </script>
 </body>
