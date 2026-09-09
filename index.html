@@ -1,15 +1,332 @@
 <!doctype html>
+<!-- HOODBOARD-COMING-SOON -->
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>HOOD BOARD</title>
-    <!-- Vite rewrites ./ to the configured base, so the icon resolves under a sub-path host too. -->
-    <link rel="icon" type="image/png" href="./brand/hoodboard-logo-v3.png" />
-    <script type="module" crossorigin src="./assets/index-DlrV1Hqs.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-oDB5Wxfb.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HOOD BOARD — Coming Soon</title>
+<meta name="description" content="A breakout board for Robinhood Chain memecoins. Thousands launch. Few make the Board.">
+<meta property="og:title" content="HOOD BOARD">
+<meta property="og:description" content="Thousands launch. Few make the Board. A breakout board for Robinhood Chain memecoins.">
+<meta property="og:image" content="https://hoodboard.fun/brand/hoodboard-logo-v3.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="brand/hoodboard-logo-v3.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@500;600;700&display=swap">
+<style>
+:root{
+  --void:#08090B; --panel:#14161A; --edge:#33383F;
+  --bone:#EEEBE3; --dim:#B9B6AE; --faint:#7C7F85;
+  --acid:#BFF202;
+  --display:'Archivo Black',Impact,sans-serif;
+  --body:'Archivo',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--void);color:var(--bone);font-family:var(--body);overflow:hidden;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+
+/* a scrim so type always wins over the scene, whatever the camera is looking at */
+.veil{position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(105% 85% at 20% 50%,rgba(8,9,11,.93) 0%,rgba(8,9,11,.70) 34%,rgba(8,9,11,.18) 62%,rgba(8,9,11,.42) 100%)}
+
+.stage{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;
+  padding:clamp(22px,4.2vw,62px);overflow-y:auto;overflow-x:hidden}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex:0 0 auto}
+.logo{height:clamp(38px,5.4vw,62px);width:auto;opacity:0}
+.badge{font-weight:700;font-size:clamp(9px,1.05vw,11px);letter-spacing:.28em;color:var(--acid);
+  text-transform:uppercase;white-space:nowrap;padding-top:6px;opacity:0}
+
+.mid{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;
+  max-width:min(760px,92vw);padding:clamp(28px,5vh,60px) 0}
+.eyebrow{font-weight:700;font-size:clamp(9px,1.05vw,11px);letter-spacing:.3em;color:var(--faint);
+  text-transform:uppercase;margin-bottom:clamp(14px,2vw,22px);opacity:0}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,6.6vw,78px);line-height:.96;
+  letter-spacing:-.028em;text-wrap:balance}
+h1 .ln{display:block;overflow:hidden}
+h1 .ln i{display:block;font-style:normal;transform:translateY(105%)}
+h1 .on{color:var(--acid)}
+.sub{margin-top:clamp(18px,2.6vw,28px);font-size:clamp(15px,1.65vw,19px);line-height:1.55;
+  color:var(--dim);max-width:46ch;opacity:0}
+
+.tease{display:flex;flex-wrap:wrap;gap:1px;background:var(--edge);border:1px solid var(--edge);
+  margin-top:clamp(26px,3.6vw,40px);opacity:0}
+.tz{background:rgba(20,22,26,.82);backdrop-filter:blur(6px);padding:clamp(14px,1.9vw,20px) clamp(16px,2.1vw,24px);
+  flex:1 1 150px;min-width:0}
+.tz b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(13px,1.45vw,16px);
+  letter-spacing:.01em}
+.tz span{display:block;margin-top:7px;font-size:clamp(11px,1.15vw,13px);color:var(--faint);line-height:1.45}
+
+.cta{display:flex;flex-wrap:wrap;gap:clamp(10px,1.4vw,14px);margin-top:clamp(28px,3.8vw,42px);opacity:0}
+.btn{display:inline-flex;align-items:center;gap:11px;text-decoration:none;font-weight:700;
+  font-size:clamp(12px,1.35vw,15px);letter-spacing:.12em;text-transform:uppercase;
+  padding:clamp(14px,1.7vw,18px) clamp(20px,2.6vw,30px);border:1px solid var(--acid);
+  transition:transform .18s ease,box-shadow .22s ease,background .18s ease,color .18s ease}
+.btn svg{width:1.05em;height:1.05em;flex:0 0 auto}
+.btn-1{background:var(--acid);color:#0B0C06;box-shadow:0 0 0 rgba(191,242,2,0)}
+.btn-1:hover{transform:translateY(-2px);box-shadow:0 14px 40px -12px rgba(191,242,2,.55)}
+.btn-2{background:transparent;color:var(--bone);border-color:var(--edge)}
+.btn-2:hover{border-color:var(--bone);transform:translateY(-2px)}
+.btn:focus-visible{outline:2px solid var(--acid);outline-offset:3px}
+.btn.is-soon{pointer-events:none;background:transparent;color:var(--faint);border-color:var(--edge);
+  border-style:dashed;box-shadow:none;transform:none}
+
+.foot{flex:0 0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;
+  font-weight:700;font-size:clamp(9px,1.05vw,11px);letter-spacing:.22em;color:var(--faint);
+  text-transform:uppercase;padding-top:clamp(18px,2.4vw,26px);opacity:0}
+.foot a{color:var(--faint);text-decoration:none}
+.foot a:hover{color:var(--bone)}
+
+@media (max-width:640px){
+  /* Stacked, the cards must size to their content: `flex:1 1 150px` grows them to fill the column and pushes
+     the buttons off the screen entirely. */
+  .tease{flex-direction:column}
+  .tz{flex:0 0 auto}
+  .mid{justify-content:flex-start;padding-top:clamp(24px,6vh,48px)}
+  .foot{flex-direction:column;align-items:flex-start;gap:8px}
+  .cta{flex-direction:column;align-items:stretch}
+  .btn{justify-content:center}
+  /* a phone holds the whole scene behind a single column of type, so the scrim carries more of the load */
+  .veil{background:linear-gradient(180deg,rgba(8,9,11,.92) 0%,rgba(8,9,11,.86) 45%,rgba(8,9,11,.72) 100%)}
+}
+@media (prefers-reduced-motion:reduce){
+  .btn{transition:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="scene" aria-hidden="true"></canvas>
+<div class="veil" aria-hidden="true"></div>
+
+<main class="stage">
+  <header class="top">
+    <img class="logo" src="brand/hoodboard-logo-v3.png" alt="HOOD BOARD">
+    <span class="badge">Robinhood&nbsp;Chain&nbsp;·&nbsp;4663</span>
+  </header>
+
+  <section class="mid">
+    <span class="eyebrow">Coming soon</span>
+    <h1>
+      <span class="ln"><i>Thousands</i></span>
+      <span class="ln"><i>launch.</i></span>
+      <span class="ln"><i class="on">Few make</i></span>
+      <span class="ln"><i class="on">the Board.</i></span>
+    </h1>
+    <p class="sub">A breakout board for Robinhood Chain memecoins. It tracks which coins actually
+      break through — and lets you inspect exactly why.</p>
+
+    <div class="tease">
+      <div class="tz"><b>THE BOARD</b><span>Four tiers. Only coins that hold a line for six hours.</span></div>
+      <div class="tz"><b>INSPECT</b><span>Market, chain, socials and the site — evidence on every call.</span></div>
+      <div class="tz"><b>REPLAY</b><span>Rewind any day and watch the run happen.</span></div>
+    </div>
+
+    <div class="cta">
+      <a class="btn btn-1" id="tg" href="#" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.9 4.3 18.6 20c-.2 1.1-.9 1.3-1.8.8l-4.9-3.6-2.4 2.3c-.3.3-.5.5-1 .5l.3-5 9.1-8.2c.4-.4-.1-.6-.6-.2L6.1 13.1l-4.8-1.5c-1-.3-1-1 .2-1.5l18.8-7.3c.9-.3 1.6.2 1.6 1.5Z"/></svg>
+        Join the Telegram
+      </a>
+      <a class="btn btn-2" id="x" href="#" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.2 2.2h3.3l-7.2 8.3 8.5 11.3h-6.6l-5.2-6.8-6 6.8H1.7l7.7-8.8L1.2 2.2h6.8l4.7 6.2 5.5-6.2Zm-1.2 17.7h1.8L7.1 4H5.2l11.8 15.9Z"/></svg>
+        Follow on X
+      </a>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>hoodboard.fun</span>
+    <span>Thousands launch. Few make the Board.</span>
+  </footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+/* ─────────────────────────────────────────────────────────────────────────────
+   LINKS — the only thing to edit. Put the real destinations here.
+   ───────────────────────────────────────────────────────────────────────────── */
+const LINKS = {
+  telegram: '',   // ← put the real invite here, e.g. 'https://t.me/yourchannel'
+  x:        '',   // ← put the real handle here, e.g. 'https://x.com/yourhandle'
+}
+
+/* A guessed handle is worse than no handle: it would send visitors to a stranger's channel with this brand's
+   name on the button. Until a real destination is set, the button stays visibly inert and says so. */
+for (const [id, url, soon] of [['tg', LINKS.telegram, 'Telegram — opening soon'], ['x', LINKS.x, 'X — opening soon']]) {
+  const el = document.getElementById(id)
+  if (url) { el.href = url; continue }
+  el.removeAttribute('href'); el.removeAttribute('target'); el.setAttribute('aria-disabled', 'true')
+  el.classList.add('is-soon')
+  el.lastChild.textContent = ' ' + soon
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   THE MACHINE — a corridor of rails receding into fog, built procedurally so it
+   costs a few hundred triangles rather than a download. The Board's own world:
+   near-black steel, one acid light per rail, haze doing the depth.
+
+   The buffer is capped by area rather than by device ratio, the lesson the Board
+   itself learned: this scene is fill-rate bound, and a wide display asking for
+   four times the pixels is how a smooth page turns into a slideshow.
+   ───────────────────────────────────────────────────────────────────────────── */
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
+const canvas = document.getElementById('scene')
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' })
+const PIXEL_BUDGET = 3.2e6
+const dprFor = () => Math.max(1, Math.min(window.devicePixelRatio || 1, 1.6,
+  Math.sqrt(PIXEL_BUDGET / Math.max(1, innerWidth * innerHeight))))
+renderer.setPixelRatio(dprFor())
+renderer.setSize(innerWidth, innerHeight)
+renderer.toneMapping = THREE.ACESFilmicToneMapping
+renderer.toneMappingExposure = 1.35
+
+const scene = new THREE.Scene()
+scene.fog = new THREE.FogExp2(0x08090b, 0.045)
+const camera = new THREE.PerspectiveCamera(46, innerWidth / innerHeight, 0.1, 120)
+camera.position.set(0, 0.9, 6)
+
+const ACID = 0xbff202
+const steel = new THREE.MeshStandardMaterial({ color: 0x2b3038, roughness: .5, metalness: .82 })
+const dark  = new THREE.MeshStandardMaterial({ color: 0x171b21, roughness: .8, metalness: .55 })
+// Fog and tone mapping are for surfaces that receive light. A light source obeying them turns acid into olive,
+// which is exactly what the first pass looked like — so the emitters opt out of both.
+const lit  = new THREE.MeshBasicMaterial({ color: ACID, fog: false, toneMapped: false })
+const halo = new THREE.MeshBasicMaterial({ color: ACID, fog: false, toneMapped: false,
+  transparent: true, opacity: .16, blending: THREE.AdditiveBlending, depthWrite: false })
+
+scene.add(new THREE.AmbientLight(0x3b4553, 1.7))
+const key = new THREE.PointLight(ACID, 26, 26, 2); key.position.set(0, 1.4, 2); scene.add(key)
+const fill = new THREE.PointLight(0x9fb0c4, 8, 30, 2); fill.position.set(0, 3, -8); scene.add(fill)
+
+/* One bay: two side walls, a floor plate, a head beam, and the four light strips that make it read
+   as hardware rather than as boxes. Bays are recycled forward, so the corridor never ends. */
+const BAY_D = 6, BAYS = 9, HALF = 3.4
+const boxG = new THREE.BoxGeometry(1, 1, 1)
+const bays = []
+for (let i = 0; i < BAYS; i++) {
+  const g = new THREE.Group()
+  for (const s of [-1, 1]) {
+    const wall = new THREE.Mesh(boxG, steel)
+    wall.position.set(s * HALF, 1.1, 0); wall.scale.set(.34, 5.2, BAY_D * .92); g.add(wall)
+    const rib = new THREE.Mesh(boxG, dark)
+    rib.position.set(s * (HALF - .3), 1.1, -BAY_D * .42); rib.scale.set(.22, 5.0, .34); g.add(rib)
+    for (const y of [-1.25, 1.35]) {                       // floor-edge strip and the rail above it
+      const strip = new THREE.Mesh(boxG, lit.clone())
+      strip.position.set(s * (HALF - .42), y, 0); strip.scale.set(.07, .07, BAY_D * .86)
+      g.add(strip)
+      const glow = new THREE.Mesh(boxG, halo.clone())      // no post-processing: the bloom is geometry
+      glow.position.copy(strip.position); glow.scale.set(.46, .46, BAY_D * .86); g.add(glow)
+    }
+    const rail = new THREE.Mesh(boxG, steel)
+    rail.position.set(s * (HALF - .5), 1.28, 0); rail.scale.set(.5, .14, BAY_D * .86); g.add(rail)
+  }
+  const floor = new THREE.Mesh(boxG, dark)
+  floor.position.set(0, -1.6, 0); floor.scale.set(HALF * 2, .3, BAY_D * .94); g.add(floor)
+  const beam = new THREE.Mesh(boxG, dark)
+  beam.position.set(0, 3.5, -BAY_D * .40); beam.scale.set(HALF * 2, .55, .5); g.add(beam)
+  const coffer = new THREE.Mesh(boxG, lit.clone())
+  coffer.position.set(0, 3.2, -BAY_D * .40); coffer.scale.set(HALF * 1.2, .05, .07); g.add(coffer)
+  const cofferGlow = new THREE.Mesh(boxG, halo.clone())
+  cofferGlow.position.copy(coffer.position); cofferGlow.scale.set(HALF * 1.2, .34, .34); g.add(cofferGlow)
+
+  g.position.z = -i * BAY_D
+  g.userData.strips = g.children.filter((c) => c.material && c.material.isMeshBasicMaterial)
+  scene.add(g); bays.push(g)
+}
+
+/* The target motif from the mark, floating in the middle distance: three rings the camera drifts through. */
+const rings = []
+for (let i = 0; i < 3; i++) {
+  const r = new THREE.Mesh(new THREE.TorusGeometry(.85 + i * .42, .028, 10, 84),
+    new THREE.MeshBasicMaterial({ color: ACID, transparent: true, opacity: .85 - i * .18,
+      fog: false, toneMapped: false }))
+  r.position.set(0, 1.05, -13 - i * 1.9)
+  scene.add(r); rings.push(r)
+}
+
+/* Dust, so the light has something to travel through. */
+const dustN = 320, dp = new Float32Array(dustN * 3)
+for (let i = 0; i < dustN; i++) {
+  dp[i * 3] = (Math.random() - .5) * 7
+  dp[i * 3 + 1] = Math.random() * 5 - 1.5
+  dp[i * 3 + 2] = -Math.random() * BAY_D * BAYS
+}
+const dustGeo = new THREE.BufferGeometry()
+dustGeo.setAttribute('position', new THREE.BufferAttribute(dp, 3))
+const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({
+  color: 0xdaf07f, size: .026, transparent: true, opacity: .62, depthWrite: false, fog: false }))
+scene.add(dust)
+
+/* ── motion ─────────────────────────────────────────────────────────────────── */
+const pointer = { x: 0, y: 0, tx: 0, ty: 0 }
+if (!reduced) addEventListener('pointermove', (e) => {
+  pointer.tx = (e.clientX / innerWidth - .5) * 2
+  pointer.ty = (e.clientY / innerHeight - .5) * 2
+}, { passive: true })
+
+let t = 0
+const clock = new THREE.Clock()
+function frame() {
+  const dt = Math.min(clock.getDelta(), .05)
+  t += dt
+  if (!reduced) {
+    for (const g of bays) {                              // the corridor comes to the camera, forever
+      g.position.z += dt * 1.15
+      if (g.position.z > BAY_D) g.position.z -= BAY_D * BAYS
+    }
+    const pos = dust.geometry.attributes.position
+    for (let i = 0; i < dustN; i++) {
+      let z = pos.array[i * 3 + 2] + dt * .55
+      if (z > 6) z -= BAY_D * BAYS
+      pos.array[i * 3 + 2] = z
+      pos.array[i * 3 + 1] += Math.sin(t * .6 + i) * dt * .012
+    }
+    pos.needsUpdate = true
+    rings.forEach((r, i) => { r.rotation.z += dt * (.12 + i * .05); r.position.y = 1.05 + Math.sin(t * .5 + i) * .06 })
+    key.intensity = 24 + Math.sin(t * 1.7) * 3
+  }
+  pointer.x += (pointer.tx - pointer.x) * .045
+  pointer.y += (pointer.ty - pointer.y) * .045
+  camera.position.x = pointer.x * .5
+  camera.position.y = .9 - pointer.y * .28
+  camera.lookAt(pointer.x * .22, 1.0, -12)
+  renderer.render(scene, camera)
+  requestAnimationFrame(frame)
+}
+frame()
+
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight
+  camera.updateProjectionMatrix()
+  renderer.setPixelRatio(dprFor())
+  renderer.setSize(innerWidth, innerHeight)
+}, { passive: true })
+
+/* ── the opening ────────────────────────────────────────────────────────────── */
+const strips = bays.flatMap((g) => g.userData.strips)
+if (reduced) {
+  gsap.set(['.logo', '.badge', '.eyebrow', '.sub', '.tease', '.cta', '.foot'], { opacity: 1 })
+  gsap.set('h1 .ln i', { y: 0 })
+} else {
+  const baseOpacity = strips.map((s) => (s.material.transparent ? s.material.opacity : 1))
+  strips.forEach((s) => { s.material.transparent = true; s.material.opacity = 0 })
+  gsap.set(canvas, { opacity: 0 })
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } })
+  tl.to(canvas, { opacity: 1, duration: 1.1, ease: 'none' })
+    .to(strips.map((s) => s.material), { opacity: (i) => baseOpacity[i], duration: .5,
+        stagger: { each: .012, from: 'start' } }, .15)
+    .to('.logo', { opacity: 1, duration: .7 }, .35)
+    .to('.badge', { opacity: 1, duration: .7 }, .45)
+    .to('.eyebrow', { opacity: 1, duration: .6 }, .55)
+    .to('h1 .ln i', { y: 0, duration: 1.0, stagger: .075, ease: 'power4.out' }, .6)
+    .to('.sub', { opacity: 1, duration: .8 }, 1.05)
+    .to('.tease', { opacity: 1, duration: .8 }, 1.2)
+    .to('.cta', { opacity: 1, duration: .8 }, 1.35)
+    .to('.foot', { opacity: 1, duration: .8 }, 1.5)
+}
+</script>
+</body>
 </html>
